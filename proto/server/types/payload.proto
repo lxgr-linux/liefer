@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package liefer.server.payload;
+
+option go_package = "github.com/lxgr-linux/liefer/server/payload";
+
+message Body {
+    string projectId = 1;
+    string branch = 2;
+}
+
+message Payload {
+    Body body = 1;
+    bytes sig = 2;
+}
