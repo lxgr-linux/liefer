@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package liefer.server.types;
+
+message Progress {
+    uint64 timestamp = 1;
+    string content = 2;
+}

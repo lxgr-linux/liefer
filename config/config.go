@@ -7,6 +7,8 @@ import (
 
 type Config struct {
 	PubKey   []byte    `yaml:"pub_key"`
+	Host     string    `yaml:"host"`
+	Port     uint      `yaml:"port"`
 	Projects []Project `yaml:"projects"`
 }
 
@@ -14,6 +16,7 @@ type Project struct {
 	ID       string `yaml:"id"`
 	Repo     string `yaml:"repo"`
 	Location string `yaml:"location"`
+	Script   string `yaml:"script"`
 }
 
 func Read(path string) (*Config, error) {

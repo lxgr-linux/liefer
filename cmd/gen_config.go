@@ -16,7 +16,7 @@ func init() {
 
 var genConfigCmd = &cobra.Command{
 	Use:   "gen-config [config.yaml]",
-	Short: "generates a comfig",
+	Short: "generates a config",
 	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cfgPath := "./config.yaml"
@@ -34,7 +34,7 @@ var genConfigCmd = &cobra.Command{
 
 		fmt.Printf("Private key:\n%s\n", string(base64PrivKey))
 
-		cfg := config.Config{PubKey: x509.MarshalPKCS1PublicKey(&privKey.PublicKey)}
+		cfg := config.Config{PubKey: x509.MarshalPKCS1PublicKey(&privKey.PublicKey), Host: "localhost", Port: 8080}
 
 		return cfg.Write(cfgPath)
 	},

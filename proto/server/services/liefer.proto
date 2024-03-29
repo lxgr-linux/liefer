@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+import "server/types/payload.proto";
+import "server/types/response.proto";
+
+package liefer.server.services;
+
+service Liefer {
+    rpc Deliver(server.types.Payload) returns (stream server.types.Progress) {}
+}

@@ -11,7 +11,7 @@ func init() {
 }
 
 var serveCmd = &cobra.Command{
-	Use:   "gen-yaml [config.yaml]",
+	Use:   "serve [config.yaml]",
 	Short: "starts service",
 	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
