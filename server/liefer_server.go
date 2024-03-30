@@ -27,6 +27,7 @@ func (l *lieferServer) Deliver(payload *types.Payload, stream services.Liefer_De
 
 	err = p.Build(&stream)
 	if err != nil {
+		log.Printf("[Build][%s] failed: %s\n", payload.Body.ProjectId, err)
 		return err
 	}
 

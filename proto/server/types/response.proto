@@ -2,7 +2,13 @@ syntax = "proto3";
 
 package liefer.server.types;
 
+enum ProgressType {
+    info = 0;
+    error = 1;
+}
+
 message Progress {
-    uint64 timestamp = 1;
-    string content = 2;
+    int64 timestamp = 1;
+    ProgressType type = 2;
+    string content = 3;
 }

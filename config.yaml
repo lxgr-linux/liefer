@@ -75,4 +75,13 @@ pub_key:
     - 1
 host: localhost
 port: 8080
-projects: []
+projects:
+    - id: test
+      repo: https://github.com/DecentralCardgame/frontend
+      location: ~/frontend_buid_test
+      script: |
+        echo "hmm"
+        echo 'es geht'
+        sleep 3
+        echo 'jaja'
+        >&2 echo "nein"

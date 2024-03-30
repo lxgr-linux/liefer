@@ -2,6 +2,6 @@ package types
 
 import "time"
 
-func ProgresNow(content string) *Progress {
-	return &Progress{Timestamp: uint64(time.Now().Unix()), Content: content}
+func ProgresNow(t ProgressType, content string) *Progress {
+	return &Progress{Timestamp: time.Now().Unix(), Type: t, Content: content}
 }
