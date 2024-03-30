@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/lxgr-linux/liefer/build/project"
 	"github.com/lxgr-linux/liefer/config"
 	"github.com/lxgr-linux/liefer/server"
 	"github.com/spf13/cobra"
@@ -15,7 +16,6 @@ var serveCmd = &cobra.Command{
 	Short: "starts service",
 	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-
 		cfgPath := "./config.yaml"
 		if len(args) == 1 {
 			cfgPath = args[0]
@@ -26,6 +26,11 @@ var serveCmd = &cobra.Command{
 			return err
 		}
 
-		return server.Serve(cfg)
+		pr, err := project.RegistryFromConfig(cfg)
+		if err != nil {
+			return err
+		}
+
+		return server.Serve(pr, cfg)
 	},
 }
