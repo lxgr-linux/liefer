@@ -46,7 +46,7 @@ func (g Git) Checkout(branch string) error {
 }
 
 func (g Git) ResetDir() error {
-	g.logger.Println("Resetting,,,")
+	g.logger.Println("Resetting...")
 
 	checkoutCmd := exec.Command("git", "checkout", ".")
 	checkoutCmd.Dir = g.dir
