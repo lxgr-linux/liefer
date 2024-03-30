@@ -8,10 +8,22 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 func (p *Project) Build(branch string, stream *services.Liefer_DeliverServer) error {
 	p.logger.Println("Building...")
+	for {
+		if !p.locked {
+			break
+		}
+		err := (*stream).Send(types.ProgresNow(types.ProgressType_info, "Waiting for project to be freed...\n"))
+		if err != nil {
+			return err
+		}
+		time.Sleep(1 * time.Second)
+	}
+
 	p.locked = true
 	defer p.unLock()
 
@@ -35,7 +47,13 @@ func (p *Project) Build(branch string, stream *services.Liefer_DeliverServer) er
 	command := exec.Command("sh", scriptFile.Name())
 	command.Dir = p.Location
 
-	return streamCommand(command, stream)
+	err = streamCommand(command, stream)
+	if err != nil {
+		p.logger.Printf("Failed to build: %s\n", err)
+		return err
+	}
+
+	return nil
 }
 
 func streamCommand(command *exec.Cmd, stream *services.Liefer_DeliverServer) error {
