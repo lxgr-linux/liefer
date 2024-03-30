@@ -37,16 +37,13 @@ func NewPrivKey() (*rsa.PrivateKey, error) {
 	return rsa.GenerateKey(rand.Reader, 512)
 }
 
-func PrivKeyToBase64(privKey *rsa.PrivateKey) []byte {
+func PrivKeyToString(privKey *rsa.PrivateKey) string {
 	privKeyBytes := x509.MarshalPKCS1PrivateKey(privKey)
-	base64PrivKey := make([]byte, base64.StdEncoding.EncodedLen(len(privKeyBytes)))
-	base64.StdEncoding.Encode(base64PrivKey, privKeyBytes)
-	return base64PrivKey
+	return base64.StdEncoding.EncodeToString(privKeyBytes)
 }
 
-func PrivKeyFromBase64(base64PrivKey []byte) (*rsa.PrivateKey, error) {
-	privKeyBytes := make([]byte, base64.StdEncoding.DecodedLen(len(base64PrivKey)))
-	_, err := base64.StdEncoding.Decode(privKeyBytes, base64PrivKey)
+func PrivKeyFromString(base64PrivKey string) (*rsa.PrivateKey, error) {
+	privKeyBytes, err := base64.StdEncoding.DecodeString(base64PrivKey)
 	if err != nil {
 		return nil, err
 	}

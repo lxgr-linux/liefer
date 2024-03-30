@@ -30,7 +30,7 @@ var deliverCmd = &cobra.Command{
 			return fmt.Errorf("branch is empty")
 		}
 
-		privKey, err := crypto.PrivKeyFromBase64([]byte(args[2]))
+		privKey, err := crypto.PrivKeyFromString(args[2])
 		if err != nil {
 			return err
 		}

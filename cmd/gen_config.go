@@ -27,7 +27,7 @@ var genConfigCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Printf("Private key:\n%s\n", string(crypto.PrivKeyToBase64(privKey)))
+		fmt.Printf("Private key:\n%s\n", crypto.PrivKeyToString(privKey))
 
 		cfg := config.Config{PubKey: x509.MarshalPKCS1PublicKey(&privKey.PublicKey), Host: "localhost", Port: 8080}
 
