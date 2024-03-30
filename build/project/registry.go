@@ -28,6 +28,16 @@ func (pr *Registry) GetProject(id string) (*Project, error) {
 	return nil, fmt.Errorf("project `%s` not found", id)
 }
 
+func (pr *Registry) CreateAllDirs() error {
+	for _, p := range pr.projects {
+		err := p.CreateDir()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func RegistryFromConfig(cfg *config.Config) (*Registry, error) {
 	var pr Registry
 

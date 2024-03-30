@@ -31,6 +31,11 @@ var serveCmd = &cobra.Command{
 			return err
 		}
 
+		err = pr.CreateAllDirs()
+		if err != nil {
+			return err
+		}
+
 		return server.Serve(pr, cfg)
 	},
 }

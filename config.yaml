@@ -80,8 +80,4 @@ projects:
       repo: https://github.com/DecentralCardgame/frontend
       location: ~/frontend_buid_test
       script: |
-        echo "hmm"
-        echo 'es geht'
-        sleep 3
-        echo 'jaja'
-        >&2 echo "nein"
+        npm i && npm run build

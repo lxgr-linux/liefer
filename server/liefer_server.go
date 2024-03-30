@@ -25,7 +25,7 @@ func (l *lieferServer) Deliver(payload *types.Payload, stream services.Liefer_De
 		return err
 	}
 
-	err = p.Build(&stream)
+	err = p.Build(payload.Body.Branch, &stream)
 	if err != nil {
 		log.Printf("[Build][%s] failed: %s\n", payload.Body.ProjectId, err)
 		return err

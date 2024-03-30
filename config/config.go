@@ -3,13 +3,15 @@ package config
 import (
 	"gopkg.in/yaml.v3"
 	"os"
+	"os/user"
+	"strings"
 )
 
 type Config struct {
-	PubKey   []byte    `yaml:"pub_key"`
-	Host     string    `yaml:"host"`
-	Port     uint      `yaml:"port"`
-	Projects []Project `yaml:"projects"`
+	PubKey   []byte     `yaml:"pub_key"`
+	Host     string     `yaml:"host"`
+	Port     uint       `yaml:"port"`
+	Projects []*Project `yaml:"projects"`
 }
 
 type Project struct {
@@ -17,6 +19,12 @@ type Project struct {
 	Repo     string `yaml:"repo"`
 	Location string `yaml:"location"`
 	Script   string `yaml:"script"`
+}
+
+func (p *Project) ResolveLocation() {
+	usr, _ := user.Current()
+	dir := usr.HomeDir
+	p.Location = strings.Replace(p.Location, "~", dir, 1)
 }
 
 func Read(path string) (*Config, error) {
@@ -27,6 +35,10 @@ func Read(path string) (*Config, error) {
 	}
 
 	err = yaml.Unmarshal(file, &config)
+	for _, p := range config.Projects {
+		p.ResolveLocation()
+	}
+
 	return &config, err
 }
 
