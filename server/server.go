@@ -1,6 +1,7 @@
 package server
 
 import (
+	"crypto/x509"
 	"fmt"
 	"github.com/lxgr-linux/liefer/build/project"
 	"github.com/lxgr-linux/liefer/config"
@@ -19,7 +20,12 @@ func Serve(pr *project.Registry, cfg *config.Config) error {
 
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
-	services.RegisterLieferServer(grpcServer, &lieferServer{pr: pr})
+
+	pubKey, err := x509.ParsePKCS1PublicKey(cfg.PubKey)
+	if err != nil {
+		return err
+	}
+	services.RegisterLieferServer(grpcServer, &lieferServer{pr: pr, pubKey: pubKey})
 
 	log.Printf("Starting grpc server at %s...\n", host)
 

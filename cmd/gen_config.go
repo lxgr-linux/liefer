@@ -1,12 +1,10 @@
 package cmd
 
 import (
-	"crypto/rand"
-	"crypto/rsa"
 	"crypto/x509"
-	"encoding/base64"
 	"fmt"
 	"github.com/lxgr-linux/liefer/config"
+	"github.com/lxgr-linux/liefer/crypto"
 	"github.com/spf13/cobra"
 )
 
@@ -24,15 +22,12 @@ var genConfigCmd = &cobra.Command{
 			cfgPath = args[0]
 		}
 
-		privKey, err := rsa.GenerateKey(rand.Reader, 512)
+		privKey, err := crypto.NewPrivKey()
 		if err != nil {
 			return err
 		}
-		privKeyBytes := x509.MarshalPKCS1PrivateKey(privKey)
-		base64PrivKey := make([]byte, base64.StdEncoding.EncodedLen(len(privKeyBytes)))
-		base64.StdEncoding.Encode(base64PrivKey, privKeyBytes)
 
-		fmt.Printf("Private key:\n%s\n", string(base64PrivKey))
+		fmt.Printf("Private key:\n%s\n", string(crypto.PrivKeyToBase64(privKey)))
 
 		cfg := config.Config{PubKey: x509.MarshalPKCS1PublicKey(&privKey.PublicKey), Host: "localhost", Port: 8080}
 
