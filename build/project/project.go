@@ -32,6 +32,11 @@ func (p *Project) CreateDir() error {
     } else if !stat.IsDir() {
         return fmt.Errorf("%s exists, but is not a dir", p.Location)
     } else {
+        err = p.git.Checkout(".")
+        if err != nil {
+            return err
+        }
+
         err = p.git.Pull()
         if err != nil {
             return err
