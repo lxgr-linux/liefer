@@ -1,12 +1,15 @@
-version: v1
+version: v2
 managed:
-    enabled: true
-    go_package_prefix:
-        default: github.com/lxgr-linux/liefer
+  enabled: true
+  override:
+    - file_option: go_package_prefix
+      value: github.com/lxgr-linux/liefer
 plugins:
-    - plugin: go
-      out: .
-      opt: paths=source_relative
-    - plugin: go-grpc
-      out: .
-      opt: paths=source_relative
+  - protoc_builtin: go
+    out: .
+    opt: paths=source_relative
+  - protoc_builtin: go-grpc
+    out: .
+    opt: paths=source_relative
+inputs:
+  - directory: proto/
