@@ -3,6 +3,7 @@ package server
 import (
 	"crypto/rsa"
 	"fmt"
+
 	"github.com/lxgr-linux/liefer/build/project"
 	"github.com/lxgr-linux/liefer/crypto"
 	"github.com/lxgr-linux/liefer/server/services"
@@ -32,7 +33,7 @@ func (l *lieferServer) Deliver(payload *types.Payload, stream services.Liefer_De
 
 	err = p.Build(payload.Body.Branch, &stream)
 	if err != nil {
-		return err
+		return fmt.Errorf("build failed: %w", err)
 	}
 
 	return nil

@@ -2,9 +2,10 @@ package git
 
 import (
 	"fmt"
-	"github.com/lxgr-linux/liefer/logger"
 	"log"
 	"os/exec"
+
+	"github.com/lxgr-linux/liefer/logger"
 )
 
 type Git struct {
