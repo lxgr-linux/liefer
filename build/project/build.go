@@ -142,17 +142,3 @@ func readSteps(
 	wg.Done()
 	errCh <- nil
 }
-
-func getCommandOutput(command *exec.Cmd) (io.Reader, error) {
-	stdout, err := command.StdoutPipe()
-	if err != nil {
-		return nil, err
-	}
-
-	stderr, err := command.StderrPipe()
-	if err != nil {
-		return nil, err
-	}
-
-	return io.MultiReader(stderr, stdout), nil
-}
