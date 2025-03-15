@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/lxgr-linux/liefer/server/services"
@@ -40,7 +41,7 @@ func (p *Project) Build(branch string, stream *services.Liefer_DeliverServer) er
 	defer scriptFile.Close()
 	defer os.Remove(scriptFile.Name())
 
-	_, err = scriptFile.Write([]byte(p.Script))
+	_, err = scriptFile.Write([]byte("set -o errexit\nset -o pipefail\nset -o verbose\n\n" + p.Script))
 	if err != nil {
 		return err
 	}
@@ -63,35 +64,35 @@ func streamCommand(command *exec.Cmd, stream *services.Liefer_DeliverServer) err
 		return err
 	}
 
-	output, err := getCommandOutput(command)
+	stdout, err := command.StdoutPipe()
+	if err != nil {
+		return err
+	}
+
+	stderr, err := command.StderrPipe()
+	if err != nil {
+		return err
+	}
+
 	err = command.Start()
 	if err != nil {
 		return err
 	}
 
-	var sendBuf []byte
-	for {
-		var buf = make([]byte, 128)
-		n, err := output.Read(buf)
-		if err == io.EOF {
-			break
-		}
+	var errCh = make(chan error)
+	var wg sync.WaitGroup
+
+	go readSteps(stdout, stream, errCh, &wg)
+	go readSteps(stderr, stream, errCh, &wg)
+
+	select {
+	case err := <-errCh:
 		if err != nil {
 			return err
 		}
-
-		sendBuf = append(sendBuf, buf[:n]...)
-
-		if strings.HasSuffix(string(sendBuf), "\n") {
-			err = (*stream).Send(types.ProgresNow(types.ProgressType_info, string(sendBuf)))
-			if err != nil {
-				return err
-			}
-
-			sendBuf = make([]byte, 0)
-		}
 	}
 
+	wg.Wait()
 	err = command.Wait()
 	if err != nil {
 		err = (*stream).Send(
@@ -108,6 +109,36 @@ func streamCommand(command *exec.Cmd, stream *services.Liefer_DeliverServer) err
 	return nil
 }
 
+func readSteps(reader io.Reader, stream *services.Liefer_DeliverServer, errCh chan error, wg *sync.WaitGroup) {
+	var sendBuf []byte
+	wg.Add(1)
+	for {
+		var buf = make([]byte, 128)
+		n, err := reader.Read(buf)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			errCh <- err
+			return
+		}
+
+		sendBuf = append(sendBuf, buf[:n]...)
+
+		if strings.HasSuffix(string(sendBuf), "\n") {
+			err = (*stream).Send(types.ProgresNow(types.ProgressType_info, string(sendBuf)))
+			if err != nil {
+				errCh <- err
+				return
+			}
+
+			sendBuf = make([]byte, 0)
+		}
+	}
+	wg.Done()
+	errCh <- nil
+}
+
 func getCommandOutput(command *exec.Cmd) (io.Reader, error) {
 	stdout, err := command.StdoutPipe()
 	if err != nil {
@@ -119,5 +150,5 @@ func getCommandOutput(command *exec.Cmd) (io.Reader, error) {
 		return nil, err
 	}
 
-	return io.MultiReader(stdout, stderr), nil
+	return io.MultiReader(stderr, stdout), nil
 }
