@@ -82,8 +82,8 @@ func streamCommand(command *exec.Cmd, stream *services.Liefer_DeliverServer) err
 	var errCh = make(chan error)
 	var wg sync.WaitGroup
 
-	go readSteps(stdout, stream, errCh, &wg)
-	go readSteps(stderr, stream, errCh, &wg)
+	go readSteps(stdout, stream, types.ProgressType_info, errCh, &wg)
+	go readSteps(stderr, stream, types.ProgressType_error, errCh, &wg)
 
 	select {
 	case err := <-errCh:
@@ -109,7 +109,11 @@ func streamCommand(command *exec.Cmd, stream *services.Liefer_DeliverServer) err
 	return nil
 }
 
-func readSteps(reader io.Reader, stream *services.Liefer_DeliverServer, errCh chan error, wg *sync.WaitGroup) {
+func readSteps(
+	reader io.Reader, stream *services.Liefer_DeliverServer,
+	progressType types.ProgressType,
+	errCh chan error, wg *sync.WaitGroup,
+) {
 	var sendBuf []byte
 	wg.Add(1)
 	for {
@@ -126,7 +130,7 @@ func readSteps(reader io.Reader, stream *services.Liefer_DeliverServer, errCh ch
 		sendBuf = append(sendBuf, buf[:n]...)
 
 		if strings.HasSuffix(string(sendBuf), "\n") {
-			err = (*stream).Send(types.ProgresNow(types.ProgressType_info, string(sendBuf)))
+			err = (*stream).Send(types.ProgresNow(progressType, string(sendBuf)))
 			if err != nil {
 				errCh <- err
 				return

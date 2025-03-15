@@ -3,11 +3,12 @@ package client
 import (
 	"context"
 	"fmt"
-	"github.com/lxgr-linux/liefer/server/types"
 	"io"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/lxgr-linux/liefer/server/types"
 )
 
 func (c Client) SendDeliver(payload *types.Payload) error {
@@ -28,6 +29,8 @@ func (c Client) SendDeliver(payload *types.Payload) error {
 
 		if progress.Type == types.ProgressType_error {
 			escape = "\x1b[1;31m"
+		} else {
+			escape = ""
 		}
 
 		timeStamp := time.Unix(progress.Timestamp, 0).UTC().Format(time.DateTime)
