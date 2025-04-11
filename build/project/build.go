@@ -41,7 +41,7 @@ func (p *Project) Build(branch string, stream *services.Liefer_DeliverServer) er
 	defer scriptFile.Close()
 	defer os.Remove(scriptFile.Name())
 
-	_, err = scriptFile.Write([]byte("set -o errexit\nset -o pipefail\nset -o verbose\n\n" + p.Script))
+	_, err = scriptFile.Write([]byte("set -o errexit\nset -o pipefail\nset -o verbose\n\n" + p.Script + "\necho 'Done'"))
 	if err != nil {
 		return err
 	}
